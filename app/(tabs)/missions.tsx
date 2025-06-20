@@ -11,6 +11,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Search, Filter, Clock, MapPin, Zap, Plus, Camera, CircleCheck as CheckCircle } from 'lucide-react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -93,6 +94,7 @@ export default function MissionsScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Toutes');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCompleted, setShowCompleted] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const categories = ['Toutes', 'Environnement', 'Social', 'Éducation', 'Santé'];
 
@@ -128,7 +130,7 @@ export default function MissionsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Missions ONDA</Text>
         <TouchableOpacity style={styles.filterToggle}>
@@ -201,7 +203,16 @@ export default function MissionsScreen() {
       <ScrollView 
         style={styles.missionsList} 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.missionsContent}
+        contentContainerStyle={[
+          styles.missionsContent,
+          { 
+            paddingBottom: Platform.select({
+              ios: 120 + insets.bottom,
+              android: 100,
+              default: 100,
+            })
+          }
+        ]}
       >
         {filteredMissions.map((mission) => (
           <TouchableOpacity key={mission.id} style={styles.missionCard}>
@@ -299,11 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingTop: Platform.select({
-      ios: 10,
-      android: 20,
-      default: 20,
-    }),
+    paddingTop: 20,
     paddingBottom: 16,
   },
   headerTitle: {
@@ -387,11 +394,6 @@ const styles = StyleSheet.create({
   },
   missionsContent: {
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingBottom: Platform.select({
-      ios: 120,
-      android: 90,
-      default: 90,
-    }),
   },
   missionCard: {
     backgroundColor: '#fff',

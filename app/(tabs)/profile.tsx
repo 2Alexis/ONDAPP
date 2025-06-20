@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { User, Settings, Zap, Trophy, Target, Calendar, MapPin, Star, Award, TrendingUp, Gift, CreditCard as Edit } from 'lucide-react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -53,6 +54,7 @@ const RECENT_MISSIONS = [
 
 export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState<'stats' | 'badges' | 'missions'>('stats');
+  const insets = useSafeAreaInsets();
 
   const userProfile = {
     name: 'Alex Dubois',
@@ -70,10 +72,19 @@ export default function ProfileScreen() {
   const progressPercentage = (userProfile.vibes / userProfile.nextLevelVibes) * 100;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { 
+            paddingBottom: Platform.select({
+              ios: 120 + insets.bottom,
+              android: 100,
+              default: 100,
+            })
+          }
+        ]}
       >
         {/* Profile Header */}
         <View style={styles.profileHeader}>
@@ -306,11 +317,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   scrollContent: {
-    paddingBottom: Platform.select({
-      ios: 120,
-      android: 90,
-      default: 90,
-    }),
+    flexGrow: 1,
   },
   profileHeader: {
     backgroundColor: '#fff',
@@ -318,11 +325,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginTop: Platform.select({
-      ios: 0,
-      android: 10,
-      default: 10,
-    }),
+    marginTop: 10,
   },
   profileInfo: {
     flexDirection: 'row',

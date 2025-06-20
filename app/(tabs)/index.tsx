@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Zap,
   Trophy,
@@ -58,6 +59,7 @@ const SAMPLE_MISSIONS = [
 
 export default function HomeScreen() {
   const [selectedFilter, setSelectedFilter] = useState('Toutes');
+  const insets = useSafeAreaInsets();
   
   const userStats = {
     vibes: 1250,
@@ -69,10 +71,19 @@ export default function HomeScreen() {
   const filters = ['Toutes', 'Environnement', 'Social', 'Éducation', 'Santé'];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { 
+            paddingBottom: Platform.select({
+              ios: 120 + insets.bottom,
+              android: 100,
+              default: 100,
+            })
+          }
+        ]}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -202,22 +213,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   scrollContent: {
-    paddingBottom: Platform.select({
-      ios: 120,
-      android: 90,
-      default: 90,
-    }),
+    flexGrow: 1,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingTop: Platform.select({
-      ios: 10,
-      android: 20,
-      default: 20,
-    }),
+    paddingTop: 20,
     paddingBottom: 20,
   },
   greeting: {

@@ -9,6 +9,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   MapPin,
   Users,
@@ -75,6 +76,7 @@ const SAMPLE_CIRCLES = [
 export default function MapScreen() {
   const [selectedCircle, setSelectedCircle] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'map' | 'list'>('list');
+  const insets = useSafeAreaInsets();
 
   const handleJoinCircle = (circleId: number) => {
     console.log('Joining circle:', circleId);
@@ -85,7 +87,7 @@ export default function MapScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Cercles ONDA</Text>
         <View style={styles.viewToggle}>
@@ -130,7 +132,16 @@ export default function MapScreen() {
         <ScrollView 
           style={styles.circlesList} 
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.circlesContent}
+          contentContainerStyle={[
+            styles.circlesContent,
+            { 
+              paddingBottom: Platform.select({
+                ios: 120 + insets.bottom,
+                android: 100,
+                default: 100,
+              })
+            }
+          ]}
         >
           <View style={styles.locationHeader}>
             <View style={styles.currentLocation}>
@@ -265,11 +276,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingTop: Platform.select({
-      ios: 10,
-      android: 20,
-      default: 20,
-    }),
+    paddingTop: 20,
     paddingBottom: 16,
   },
   headerTitle: {
@@ -327,11 +334,6 @@ const styles = StyleSheet.create({
   },
   circlesContent: {
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingBottom: Platform.select({
-      ios: 120,
-      android: 90,
-      default: 90,
-    }),
   },
   locationHeader: {
     marginBottom: 20,

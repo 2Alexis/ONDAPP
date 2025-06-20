@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle, Send, Heart, Share2, MoveHorizontal as MoreHorizontal, Trophy, Zap, Users } from 'lucide-react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -79,6 +80,7 @@ export default function CommunityScreen() {
   const [activeTab, setActiveTab] = useState<'feed' | 'leaderboard'>('feed');
   const [newPost, setNewPost] = useState('');
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const insets = useSafeAreaInsets();
 
   const handleLike = (postId: number) => {
     const newLikedPosts = new Set(likedPosts);
@@ -106,7 +108,7 @@ export default function CommunityScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Communauté</Text>
         <View style={styles.tabSelector}>
@@ -149,7 +151,16 @@ export default function CommunityScreen() {
         <ScrollView 
           style={styles.feedContainer} 
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.feedContent}
+          contentContainerStyle={[
+            styles.feedContent,
+            { 
+              paddingBottom: Platform.select({
+                ios: 120 + insets.bottom,
+                android: 100,
+                default: 100,
+              })
+            }
+          ]}
         >
           {/* Post Composer */}
           <View style={styles.postComposer}>
@@ -278,7 +289,16 @@ export default function CommunityScreen() {
         <ScrollView 
           style={styles.leaderboardContainer} 
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.leaderboardContent}
+          contentContainerStyle={[
+            styles.leaderboardContent,
+            { 
+              paddingBottom: Platform.select({
+                ios: 120 + insets.bottom,
+                android: 100,
+                default: 100,
+              })
+            }
+          ]}
         >
           <View style={styles.leaderboardHeader}>
             <Text style={styles.leaderboardTitle}>Classement des Vibes</Text>
@@ -353,11 +373,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingTop: Platform.select({
-      ios: 10,
-      android: 20,
-      default: 20,
-    }),
+    paddingTop: 20,
     paddingBottom: 16,
   },
   headerTitle: {
@@ -393,11 +409,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   feedContent: {
-    paddingBottom: Platform.select({
-      ios: 120,
-      android: 90,
-      default: 90,
-    }),
+    flexGrow: 1,
   },
   postComposer: {
     backgroundColor: '#fff',
@@ -604,11 +616,6 @@ const styles = StyleSheet.create({
   },
   leaderboardContent: {
     paddingHorizontal: isTablet ? 40 : 20,
-    paddingBottom: Platform.select({
-      ios: 120,
-      android: 90,
-      default: 90,
-    }),
   },
   leaderboardHeader: {
     alignItems: 'center',
